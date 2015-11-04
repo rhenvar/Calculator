@@ -20,25 +20,30 @@ public class ExpressionManager {
 	// array of separate
 	// characters and operators
 	List<String> tokenized = new ArrayList<>(
-		Arrays.asList(evaluate.split("(?:((?<=[+-/*^()])|(?=[+-/*^()])))(?!\\A)")));
+		Arrays.asList(evaluate.split("(?:((?<=[+/*^()])|(?=[+-/*^()])))(?!\\A)")));
 
-	// handling distributive property 3(4 + 2), (4 + 2)3, and (3)(4)
 	for (int i = 0; i < tokenized.size() - 1; i++) {
+	    // handling distributive property 3(4 + 2), (4 + 2)3, and (3)(4)
 	    if (tokenized.get(i).matches("\\d+") && tokenized.get(i + 1).equals("(")
 		    || tokenized.get(i).equals(")") && tokenized.get(i + 1).matches("\\d+")
 		    || tokenized.get(i).equals(")") && tokenized.get(i + 1).equals("(")) {
 		tokenized.add(i + 1, "*");
 	    }
+	    
+	    // handling negative number cases -3 -2
+	    if (tokenized.get(i).contains("-") && tokenized.get(i + 1).contains("-")) {
+		tokenized.add(i + 1, "+");
+		i++;
+	    }
 	}
-	System.out.println(tokenized);
 	for (int i = 0; i < tokenized.size(); i++) {
-	    System.out.println(postfix);
 	    String token = tokenized.get(i);
-
-	    // numbers
-	    if (token.matches("\\d+")) {
+	    
+	    // numbers, negatives included
+	    if (token.matches("\\d+|-\\d+")) {
 		postfix.push(convertToDouble(token));
 	    }
+	    
 	    // operators
 	    else {
 		// (
@@ -56,7 +61,6 @@ public class ExpressionManager {
 
 		// -+*/^
 		else {
-
 		    while (!operators.isEmpty() && OPERATORS.indexOf(operators.peek()) >= OPERATORS.indexOf(token)) {
 			evaluatePostfix();
 		    }
