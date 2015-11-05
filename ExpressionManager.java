@@ -16,37 +16,18 @@ public class ExpressionManager {
     }
 
     // Evaluates input expression
+    // Returns double
     public double evaluate(String input) {
-	String evaluate = input.replaceAll("\\s+", "");
+	List<String> tokenized = clean(input);
 
-	// Regex to tokenize our input expression into an array of separate
-	// characters and operators
-	List<String> tokenized = new ArrayList<>(
-		Arrays.asList(evaluate.split("(?:((?<=[+/*^()])|(?=[+-/*^()])))(?!\\A)")));
-
-	for (int i = 0; i < tokenized.size() - 1; i++) {
-	    
-	    // handling distributive property: 3(4 + 2) and (3)(4)
-	    if (tokenized.get(i).matches("\\d+|-\\d+") && tokenized.get(i + 1).equals("(")
-		    || tokenized.get(i).equals(")") && tokenized.get(i + 1).equals("(")) {
-		tokenized.add(i + 1, "*");
-	    }
-
-	    // handling negative number cases: -3 -2
-	    if (tokenized.get(i).contains("-") && tokenized.get(i + 1).contains("-")) {
-		tokenized.add(i + 1, "+");
-		i++;
-	    }
-	}
 	for (int i = 0; i < tokenized.size(); i++) {
 	    String token = tokenized.get(i);
-	    
+
 	    if (token.matches("\\d+|-\\d+")) {
 		postfix.push(convertToDouble(token));
-	    }
-	    else {
+	    } else {
 		// (
-		if (token.equals("(")) {
+		if (token.equals("(") || operators.isEmpty()) {
 		    operators.push(token);
 		}
 		// )
@@ -69,10 +50,14 @@ public class ExpressionManager {
 	while (!operators.isEmpty()) {
 	    evaluatePostfix();
 	}
+	if (postfix.size() > 1) {
+	    throw new IllegalArgumentException("No operators left to evaluate!");
+	}
 	return postfix.pop();
     }
 
-    // Evaluates and returns 
+    // Evaluates input data with operator
+    // Returns double
     private double calculate(double first, double second, String operator) {
 	switch (operator) {
 	case "^":
@@ -81,14 +66,15 @@ public class ExpressionManager {
 	    return first * second;
 	case "/":
 	    return first / second;
-	case "-":
-	    return first - second;
-	default:
+	case "+":
 	    return first + second;
+	default:
+	    return first - second;
 	}
     }
 
-    // Evaluates first two values from postfix with first value on operator stack
+    // Evaluates first two values from postfix with first value on operator
+    // stack
     // Pushes value to postfix
     private void evaluatePostfix() {
 	String operator = operators.pop();
@@ -98,11 +84,33 @@ public class ExpressionManager {
     }
 
     // Converts string to double
+    // Returns double
     private double convertToDouble(String number) {
 	if (number.contains(".")) {
 	    return Double.parseDouble(number);
 	} else {
 	    return Integer.parseInt(number);
 	}
+    }
+    
+    // Formats input expression into usable tokens 
+    // Returns List of Strings
+    private List<String> clean(String input) {
+	String evaluate = input.replaceAll("\\s+", "");
+
+	List<String> tokenized = new ArrayList<>(
+		Arrays.asList(evaluate.split("(?:((?<=[+/*^()])|(?=[+-/*^()])))(?!\\A)")));
+
+	for (int i = 0; i < tokenized.size() - 1; i++) {
+	    if (tokenized.get(i).matches("\\d+|-\\d+") && tokenized.get(i + 1).equals("(")
+		    || tokenized.get(i).equals(")") && tokenized.get(i + 1).equals("(")) {
+		tokenized.add(i + 1, "*");
+	    }
+	    if (tokenized.get(i).matches("\\d+|-\\d+") && tokenized.get(i + 1).matches("-\\d+")) {
+		tokenized.add(i + 1, "+");
+		i++;
+	    }
+	}
+	return tokenized;
     }
 }
