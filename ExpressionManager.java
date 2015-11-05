@@ -1,18 +1,21 @@
-import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
+// ExpressionManager uses Polish postfix notation to evaluate mathematical expressions
 public class ExpressionManager {
     private static final List<String> OPERATORS = new ArrayList<>(Arrays.asList("-", "+", "/", "*", "^"));
     private Stack<Double> postfix;
     private Stack<String> operators;
 
+    // Initialize postfix and operators stack
     public ExpressionManager() {
 	operators = new Stack<>();
 	postfix = new Stack<>();
     }
 
+    // Evaluates input expression
     public double evaluate(String input) {
 	String evaluate = input.replaceAll("\\s+", "");
 
@@ -37,19 +40,15 @@ public class ExpressionManager {
 	}
 	for (int i = 0; i < tokenized.size(); i++) {
 	    String token = tokenized.get(i);
-
-	    // numbers, negatives included
+	    
 	    if (token.matches("\\d+|-\\d+")) {
 		postfix.push(convertToDouble(token));
 	    }
-
-	    // operators
 	    else {
 		// (
 		if (token.equals("(")) {
 		    operators.push(token);
 		}
-
 		// )
 		else if (token.equals(")")) {
 		    while (!operators.isEmpty() && !operators.peek().equals("(")) {
@@ -57,7 +56,6 @@ public class ExpressionManager {
 		    }
 		    operators.pop();
 		}
-
 		// -+*/^
 		else {
 		    while (!operators.isEmpty() && OPERATORS.indexOf(operators.peek()) >= OPERATORS.indexOf(token)) {
@@ -67,13 +65,14 @@ public class ExpressionManager {
 		}
 	    }
 	}
-
+	// Evaluate remaining operators
 	while (!operators.isEmpty()) {
 	    evaluatePostfix();
 	}
 	return postfix.pop();
     }
 
+    // Evaluates and returns 
     private double calculate(double first, double second, String operator) {
 	switch (operator) {
 	case "^":
@@ -89,6 +88,8 @@ public class ExpressionManager {
 	}
     }
 
+    // Evaluates first two values from postfix with first value on operator stack
+    // Pushes value to postfix
     private void evaluatePostfix() {
 	String operator = operators.pop();
 	double second = postfix.pop();
@@ -96,6 +97,7 @@ public class ExpressionManager {
 	postfix.push(calculate(first, second, operator));
     }
 
+    // Converts string to double
     private double convertToDouble(String number) {
 	if (number.contains(".")) {
 	    return Double.parseDouble(number);
