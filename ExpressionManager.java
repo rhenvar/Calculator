@@ -16,21 +16,20 @@ public class ExpressionManager {
     public double evaluate(String input) {
 	String evaluate = input.replaceAll("\\s+", "");
 
-	// Super fancy regex to basically tokenize our input expression int an
-	// array of separate
+	// Regex to tokenize our input expression into an array of separate
 	// characters and operators
 	List<String> tokenized = new ArrayList<>(
 		Arrays.asList(evaluate.split("(?:((?<=[+/*^()])|(?=[+-/*^()])))(?!\\A)")));
 
 	for (int i = 0; i < tokenized.size() - 1; i++) {
-	    // handling distributive property 3(4 + 2), (4 + 2)3, and (3)(4)
-	    if (tokenized.get(i).matches("\\d+") && tokenized.get(i + 1).equals("(")
-		    || tokenized.get(i).equals(")") && tokenized.get(i + 1).matches("\\d+")
+	    
+	    // handling distributive property: 3(4 + 2) and (3)(4)
+	    if (tokenized.get(i).matches("\\d+|-\\d+") && tokenized.get(i + 1).equals("(")
 		    || tokenized.get(i).equals(")") && tokenized.get(i + 1).equals("(")) {
 		tokenized.add(i + 1, "*");
 	    }
-	    
-	    // handling negative number cases -3 -2
+
+	    // handling negative number cases: -3 -2
 	    if (tokenized.get(i).contains("-") && tokenized.get(i + 1).contains("-")) {
 		tokenized.add(i + 1, "+");
 		i++;
@@ -38,12 +37,12 @@ public class ExpressionManager {
 	}
 	for (int i = 0; i < tokenized.size(); i++) {
 	    String token = tokenized.get(i);
-	    
+
 	    // numbers, negatives included
 	    if (token.matches("\\d+|-\\d+")) {
 		postfix.push(convertToDouble(token));
 	    }
-	    
+
 	    // operators
 	    else {
 		// (
@@ -83,22 +82,18 @@ public class ExpressionManager {
 	    return first * second;
 	case "/":
 	    return first / second;
-	case "+":
-	    return first + second;
-	default:
+	case "-":
 	    return first - second;
+	default:
+	    return first + second;
 	}
     }
 
     private void evaluatePostfix() {
-	try {
-	    String operator = operators.pop();
-	    double second = postfix.pop();
-	    double first = postfix.pop();
-	    postfix.push(calculate(first, second, operator));
-	} catch (Exception ex) {
-	    System.out.println("Expression is Invalid!");
-	}
+	String operator = operators.pop();
+	double second = postfix.pop();
+	double first = postfix.pop();
+	postfix.push(calculate(first, second, operator));
     }
 
     private double convertToDouble(String number) {

@@ -12,5 +12,7 @@ public class CalculatorMain {
 	    ExpressionManager expMan = new ExpressionManager();
 	    System.out.println(expMan.evaluate(expression));
 	} while (!expression.startsWith("q"));
+	
+	s.close();
     }
 }
