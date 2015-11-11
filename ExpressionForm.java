@@ -16,6 +16,7 @@ public class ExpressionForm extends JFrame {
     
     public ExpressionForm() {
 	numbers = new ArrayList<>();
+	
 	// numbers
 	for (int i = 0; i < 10; i++) {
 	    numbers.add(new JButton(Integer.toString(i)));
