@@ -34,11 +34,11 @@ public class ExpressionForm extends JFrame {
 	commands.add(new JButton(")"));
 	
 	
-	buildExpression = new JTextField(20);
+	buildExpression = new JTextField(15);
 	buildExpression.setEnabled(false);
 	buildExpression.setHorizontalAlignment(JTextField.RIGHT);
 	
-	output = new JTextField(10);
+	output = new JTextField(15);
 	output.setEnabled(false);
 	output.setHorizontalAlignment(JTextField.RIGHT);
 	
