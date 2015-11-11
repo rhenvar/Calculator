@@ -23,7 +23,7 @@ public class ExpressionManager {
 	for (int i = 0; i < tokenized.size(); i++) {
 	    String token = tokenized.get(i);
 
-	    if (token.matches("\\d+|-\\d+")) {
+	    if (isNumber(token)) {
 		postfix.push(convertToDouble(token));
 	    } else {
 		// (
@@ -56,6 +56,10 @@ public class ExpressionManager {
 	return postfix.pop();
     }
 
+    private boolean isNumber(String token) {
+	return token.matches("-{0,1}\\d*.{0,1}\\d+");
+    }
+    
     // Evaluates input data with operator
     // Returns double
     private double calculate(double first, double second, String operator) {
@@ -99,14 +103,14 @@ public class ExpressionManager {
 	String evaluate = input.replaceAll("\\s+", "");
 
 	List<String> tokenized = new ArrayList<>(
-		Arrays.asList(evaluate.split("(?:((?<=[+/*^()])|(?=[+-/*^()])))(?!\\A)")));
+		Arrays.asList(evaluate.split("(?:((?<=[[+/*^()]&&[^.]])|(?=[[+-/*^()]&&[^.]])))(?!\\A)")));
 
 	for (int i = 0; i < tokenized.size() - 1; i++) {
-	    if (tokenized.get(i).matches("\\d+|-\\d+") && tokenized.get(i + 1).equals("(")
+	    if (isNumber(tokenized.get(i)) && tokenized.get(i + 1).equals("(")
 		    || tokenized.get(i).equals(")") && tokenized.get(i + 1).equals("(")) {
 		tokenized.add(i + 1, "*");
 	    }
-	    if (tokenized.get(i).matches("\\d+|-\\d+") && tokenized.get(i + 1).matches("-\\d+")) {
+	    if (isNumber(tokenized.get(i)) && isNumber(tokenized.get(i + 1))) {
 		tokenized.add(i + 1, "+");
 		i++;
 	    }
