@@ -12,7 +12,6 @@ public class ExpressionTester {
 	assertEquals("0 * 3 * 4.0 should be 0.0", 0.0, expTestMan.evaluate("0 * 3 * 4.0"), DELTA);
     }
     
-    
     @Test 
     public void divisionWithZero() {
 	ExpressionManager expTestMan = new ExpressionManager();
@@ -20,7 +19,6 @@ public class ExpressionTester {
 	assertEquals("0 / 5 should be 0.0", 0.0, expTestMan.evaluate("0 / 5"), DELTA);
 	assertEquals("0 / 3.4 should be 0.0", 0.0, expTestMan.evaluate("0 / 3.4"), DELTA);
     }
-    
     
     @Test
     public void multiplication() {
@@ -76,12 +74,4 @@ public class ExpressionTester {
 	assertEquals("-3(1 + 1) should be -6.0", -6.0, expTestMan.evaluate("-3(1 + 1)"), DELTA);
     }
 }
-
-
-
-
-
-
-
-
 
